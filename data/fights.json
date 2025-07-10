@@ -1,0 +1,58 @@
+[
+  {
+    "fightId": 1,
+    "hero": {
+      "id": 1,
+      "name": "Spider-Man",
+      "alias": "Peter Parker"
+    },
+    "villain": {
+      "id": 2,
+      "name": "Thanos",
+      "alias": "El Titán Loco"
+    },
+    "winner": "Thanos"
+  },
+  {
+    "fightId": 2,
+    "hero": {
+      "id": 1,
+      "name": "Spider-Man",
+      "alias": "Peter Parker"
+    },
+    "villain": {
+      "id": 2,
+      "name": "Thanos",
+      "alias": "El Titán Loco"
+    },
+    "winner": "Thanos"
+  },
+  {
+    "fightId": 3,
+    "hero": {
+      "id": 1,
+      "name": "Spider-Man",
+      "alias": "Peter Parker"
+    },
+    "villain": {
+      "id": 2,
+      "name": "Thanos",
+      "alias": "El Titán Loco"
+    },
+    "winner": "Thanos"
+  },
+  {
+    "fightId": 4,
+    "hero": {
+      "id": 1,
+      "name": "Spider-Man",
+      "alias": "Peter Parker"
+    },
+    "villain": {
+      "id": 2,
+      "name": "Thanos",
+      "alias": "El Titán Loco"
+    },
+    "winner": "Spider-Man"
+  }
+]
