@@ -1,29 +1,27 @@
 import fs from 'fs-extra'
-import Hero from '../models/heroModel.js'
+import { Personaje } from '../models/Personaje.js'
 
-const filePath = './data/superheroes.json' // Verificar la ruta que tu configuraste en tu proyecto.
+const filePath = './data/personajes.json'
 
-async function getHeroes() {
+async function getPersonajes() {
     try {
         const data = await fs.readJson(filePath)
-        return data.map(hero => new Hero(
-            hero.id, hero.name, hero.alias, hero.city, hero.team
-        ))
+        return data.map(p => new Personaje(p.id, p.nombre, p.ciudad, p.tipo))
     } catch (error) {
         console.error(error)
+        return []
     }
-
 }
 
-async function saveHeroes(heroes) {
+async function savePersonajes(personajes) {
     try {
-        await fs.writeJson(filePath, heroes)
+        await fs.writeJson(filePath, personajes)
     } catch (error) {
         console.error(error)
     }
 }
 
 export default {
-    getHeroes,
-    saveHeroes
+    getPersonajes,
+    savePersonajes
 }

@@ -1,8 +1,7 @@
 import express from 'express'
 import swaggerUi from 'swagger-ui-express'
-import { specs } from './swagger.js'
+import swaggerSpec from './swagger.js'
 import heroController from './controllers/heroController.js'
-import villainController from './controllers/villainController.js'
 import userController from './controllers/userController.js'
 import fightController from './controllers/fightController.js'
 import authController from './controllers/authController.js'
@@ -45,25 +44,23 @@ app.use(authenticateJWT)
 // Endpoints protegidos
 app.use('/api', fightController)
 app.use('/api', heroController)
-app.use('/api', villainController)
 
 // Swagger UI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'API de Superhéroes - Documentación'
+  customSiteTitle: 'API de Personajes - Documentación'
 }))
 
 // Ruta de bienvenida
 app.get('/', (req, res) => {
   res.json({
-    message: 'API de Superhéroes funcionando correctamente',
+    message: 'API de Personajes funcionando correctamente',
     documentation: 'http://localhost:3000/api-docs',
     endpoints: {
       users: 'http://localhost:3000/api/users',
-      heroes: 'http://localhost:3000/api/heroes',
-      heroesByCity: 'http://localhost:3000/api/heroes/city/{city}',
-      villains: 'http://localhost:3000/api/villains',
-      villainsByCity: 'http://localhost:3000/api/villains/city/{city}',
+      personajes: 'http://localhost:3000/api/personajes',
+      personajesByTipo: 'http://localhost:3000/api/personajes/tipo/{tipo}',
+      personajesByCiudad: 'http://localhost:3000/api/personajes/ciudad/{ciudad}',
       fights: 'http://localhost:3000/api/fights',
       login: 'http://localhost:3000/api/login'
     }

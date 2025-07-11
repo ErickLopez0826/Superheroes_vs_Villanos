@@ -1,72 +1,64 @@
-import heroRepository from '../repositories/heroRepository.js'
+import personajeRepository from '../repositories/heroRepository.js'
 
-async function getAllHeroes() {
-    return await heroRepository.getHeroes()
+async function getAllPersonajes() {
+    return await personajeRepository.getPersonajes()
 }
 
-async function addHero(hero) {
-    if (!hero.name || !hero.alias) {
-        throw new Error("El héroe debe tener un nombre y un alias.");
+async function addPersonaje(personaje) {
+    if (!personaje.nombre || !personaje.tipo) {
+        throw new Error("El personaje debe tener un nombre y un tipo.");
     }
-
-    const heroes = await heroRepository.getHeroes();
-
-    const newId = heroes.length > 0 ? Math.max(...heroes.map(h => h.id)) + 1 : 1;
-    const newHero = { ...hero, id: newId };
-
-    heroes.push(newHero);
-    await heroRepository.saveHeroes(heroes);
-
-    return newHero;
+    const personajes = await personajeRepository.getPersonajes();
+    const newId = personajes.length > 0 ? Math.max(...personajes.map(p => p.id)) + 1 : 1;
+    const newPersonaje = { ...personaje, id: newId };
+    personajes.push(newPersonaje);
+    await personajeRepository.savePersonajes(personajes);
+    return newPersonaje;
 }
 
-async function updateHero(id, updatedHero) {
-    const heroes = await heroRepository.getHeroes();
-    const index = heroes.findIndex(hero => hero.id === parseInt(id));
-
+async function updatePersonaje(id, updatedPersonaje) {
+    const personajes = await personajeRepository.getPersonajes();
+    const index = personajes.findIndex(p => p.id === parseInt(id));
     if (index === -1) {
-        throw new Error('Héroe no encontrado');
+        throw new Error('Personaje no encontrado');
     }
-
-    delete updatedHero.id;
-    heroes[index] = { ...heroes[index], ...updatedHero };
-
-    await heroRepository.saveHeroes(heroes);
-    return heroes[index];
+    delete updatedPersonaje.id;
+    personajes[index] = { ...personajes[index], ...updatedPersonaje };
+    await personajeRepository.savePersonajes(personajes);
+    return personajes[index];
 }
 
-async function deleteHero(id) {
-    const heroes = await heroRepository.getHeroes();
-    const index = heroes.findIndex(hero => hero.id === parseInt(id));
-
+async function deletePersonaje(id) {
+    const personajes = await personajeRepository.getPersonajes();
+    const index = personajes.findIndex(p => p.id === parseInt(id));
     if (index === -1) {
-        throw new Error('Héroe no encontrado');
+        throw new Error('Personaje no encontrado');
     }
-
-    const filteredHeroes = heroes.filter(hero => hero.id !== parseInt(id));
-    await heroRepository.saveHeroes(filteredHeroes);
-    return { message: 'Héroe eliminado' };
+    const filtered = personajes.filter(p => p.id !== parseInt(id));
+    await personajeRepository.savePersonajes(filtered);
+    return { message: 'Personaje eliminado' };
 }
 
-async function findHeroesByCity(city) {
-    const heroes = await heroRepository.getHeroes();
-    return heroes.filter(hero => hero.city.toLowerCase() === city.toLowerCase());
+async function findPersonajesByCiudad(ciudad) {
+    const personajes = await personajeRepository.getPersonajes();
+    return personajes.filter(p => p.ciudad.toLowerCase() === ciudad.toLowerCase());
 }
 
-async function faceVillain(heroId, villain) {
-    const heroes = await heroRepository.getHeroes();
-    const hero = heroes.find(hero => hero.id === parseInt(heroId));
-    if (!hero) {
-        throw new Error('Héroe no encontrado');
-    }
-    return `${hero.alias} enfrenta a ${villain}`;
+async function findPersonajesByTipo(tipo) {
+    const personajes = await personajeRepository.getPersonajes();
+    return personajes.filter(p => p.tipo === tipo);
+}
+
+async function updateAllPersonajes(personajes) {
+    await personajeRepository.savePersonajes(personajes);
 }
 
 export default {
-    getAllHeroes,
-    addHero,
-    updateHero,
-    deleteHero,
-    findHeroesByCity,
-    faceVillain
+    getAllPersonajes,
+    addPersonaje,
+    updatePersonaje,
+    deletePersonaje,
+    findPersonajesByCiudad,
+    findPersonajesByTipo,
+    updateAllPersonajes
 };

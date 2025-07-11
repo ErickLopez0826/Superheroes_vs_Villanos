@@ -1,26 +1,23 @@
 import express from "express";
 import { check, validationResult, query } from 'express-validator';
-import heroService from "../services/heroService.js";
-import Hero from "../models/heroModel.js";
+import personajeService from "../services/heroService.js";
 
 const router = express.Router();
 
 /**
  * @swagger
  * tags:
- *   - name: Héroes
- *     description: Endpoints para gestión de superhéroes (requiere JWT)
+ *   - name: Personajes
+ *     description: Endpoints para gestión de personajes (superhéroes y villanos)
  */
 
 /**
  * @swagger
- * /api/heroes:
+ * /api/personajes:
  *   get:
- *     security:
- *       - bearerAuth: []
- *     summary: Obtener todos los superhéroes (paginado)
- *     description: Retorna una lista paginada de superhéroes disponibles
- *     tags: [Héroes]
+ *     summary: Obtener todos los personajes (paginado)
+ *     description: Retorna una lista paginada de personajes disponibles
+ *     tags: [Personajes]
  *     parameters:
  *       - in: query
  *         name: page
@@ -28,7 +25,7 @@ const router = express.Router();
  *           type: integer
  *           minimum: 1
  *           default: 1
- *         description: Número de página (debe ser entero positivo, sin decimales, no nulo, no 0, no negativo, sin caracteres especiales)
+ *         description: Número de página
  *       - in: query
  *         name: limit
  *         schema:
@@ -36,10 +33,10 @@ const router = express.Router();
  *           minimum: 1
  *           maximum: 50
  *           default: 50
- *         description: Cantidad máxima de héroes por página (máximo 50, mismas restricciones que page)
+ *         description: Cantidad máxima de personajes por página
  *     responses:
  *       200:
- *         description: Lista de superhéroes obtenida exitosamente
+ *         description: Lista de personajes obtenida exitosamente
  *         content:
  *           application/json:
  *             schema:
@@ -54,7 +51,7 @@ const router = express.Router();
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Hero'
+ *                     $ref: '#/components/schemas/Personaje'
  *       400:
  *         description: Parámetros inválidos
  *         content:
@@ -69,18 +66,10 @@ const router = express.Router();
  *               $ref: '#/components/schemas/Error'
  */
 router.get(
-  "/heroes",
+  "/personajes",
   [
-    query('page')
-      .exists().withMessage('El parámetro page es obligatorio')
-      .notEmpty().withMessage('El parámetro page no puede estar vacío')
-      .isInt({ min: 1, max: 999999 })
-      .withMessage('El parámetro page debe ser un entero positivo mayor a 0, sin decimales, no nulo, no negativo, sin caracteres especiales.'),
-    query('limit')
-      .exists().withMessage('El parámetro limit es obligatorio')
-      .notEmpty().withMessage('El parámetro limit no puede estar vacío')
-      .isInt({ min: 1, max: 50 })
-      .withMessage('El parámetro limit debe ser un entero positivo entre 1 y 50, sin decimales, no nulo, no negativo, sin caracteres especiales.')
+    query('page').isInt({ min: 1 }).withMessage('El parámetro page es obligatorio y debe ser entero positivo'),
+    query('limit').isInt({ min: 1, max: 50 }).withMessage('El parámetro limit es obligatorio y debe ser entre 1 y 50')
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -90,12 +79,12 @@ router.get(
     try {
       const page = parseInt(req.query.page);
       const limit = parseInt(req.query.limit);
-      const heroes = await heroService.getAllHeroes();
+      const personajes = await personajeService.getAllPersonajes();
       const start = (page - 1) * limit;
       const end = start + limit;
-      const paginated = heroes.slice(start, end);
+      const paginated = personajes.slice(start, end);
       res.json({
-        total: heroes.length,
+        total: personajes.length,
         page,
         limit,
         data: paginated
@@ -108,50 +97,11 @@ router.get(
 
 /**
  * @swagger
- * /api/heroes/city/{city}:
- *   get:
- *     summary: Obtener héroes por ciudad
- *     description: Retorna todos los superhéroes que pertenecen a una ciudad específica
- *     tags: [Héroes]
- *     parameters:
- *       - in: path
- *         name: city
- *         required: true
- *         schema:
- *           type: string
- *         description: Nombre de la ciudad
- *     responses:
- *       200:
- *         description: Lista de héroes de la ciudad
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Hero'
- *       500:
- *         description: Error del servidor
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-router.get('/heroes/city/:city', async (req, res) => {
-    try {
-        const heroes = await heroService.findHeroesByCity(req.params.city);
-        res.json(heroes);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-/**
- * @swagger
- * /api/heroes:
+ * /api/personajes:
  *   post:
- *     summary: Crear un nuevo superhéroe
- *     description: Crea un nuevo superhéroe con la información proporcionada
- *     tags: [Héroes]
+ *     summary: Crear un nuevo personaje
+ *     description: Crea un nuevo personaje (superhéroe o villano)
+ *     tags: [Personajes]
  *     requestBody:
  *       required: true
  *       content:
@@ -159,28 +109,26 @@ router.get('/heroes/city/:city', async (req, res) => {
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               nombre:
  *                 type: string
- *                 description: Nombre real del héroe
- *               alias:
- *                 type: string
- *                 description: Alias o nombre de superhéroe
- *               city:
+ *                 description: Nombre del personaje
+ *               ciudad:
  *                 type: string
  *                 description: Ciudad de origen
- *               team:
+ *               tipo:
  *                 type: string
- *                 description: Equipo al que pertenece
+ *                 enum: [superheroe, villano]
+ *                 description: Tipo de personaje
  *             required:
- *               - name
- *               - alias
+ *               - nombre
+ *               - tipo
  *     responses:
  *       201:
- *         description: Héroe creado exitosamente
+ *         description: Personaje creado exitosamente
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Hero'
+ *               $ref: '#/components/schemas/Personaje'
  *       400:
  *         description: Datos inválidos
  *         content:
@@ -199,23 +147,21 @@ router.get('/heroes/city/:city', async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post("/heroes",
+router.post("/personajes",
     [
-        check('name').not().isEmpty().withMessage('El nombre es requerido'),
-        check('alias').not().isEmpty().withMessage('El alias es requerido')
+        check('nombre').not().isEmpty().withMessage('El nombre es requerido'),
+        check('tipo').isIn(['superheroe', 'villano']).withMessage('El tipo debe ser superheroe o villano')
     ], 
     async (req, res) => {
         const errors = validationResult(req);
         if(!errors.isEmpty()){
             return res.status(400).json({ errors: errors.array() });
         }
-
         try {
-            const { name, alias, city, team } = req.body;
-            const newHero = new Hero(null, name, alias, city, team);
-            const addedHero = await heroService.addHero(newHero);
-
-            res.status(201).json(addedHero);
+            const { nombre, ciudad, tipo } = req.body;
+            const nuevo = { nombre, ciudad, tipo };
+            const agregado = await personajeService.addPersonaje(nuevo);
+            res.status(201).json(agregado);
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
@@ -223,18 +169,18 @@ router.post("/heroes",
 
 /**
  * @swagger
- * /api/heroes/{id}:
+ * /api/personajes/{id}:
  *   put:
- *     summary: Actualizar un superhéroe
- *     description: Actualiza la información de un superhéroe existente
- *     tags: [Héroes]
+ *     summary: Actualizar un personaje
+ *     description: Actualiza la información de un personaje existente
+ *     tags: [Personajes]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID del héroe a actualizar
+ *         description: ID del personaje a actualizar
  *     requestBody:
  *       required: true
  *       content:
@@ -242,54 +188,62 @@ router.post("/heroes",
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               nombre:
  *                 type: string
- *               alias:
+ *               ciudad:
  *                 type: string
- *               city:
+ *               tipo:
  *                 type: string
- *               team:
- *                 type: string
+ *                 enum: [superheroe, villano]
  *     responses:
  *       200:
- *         description: Héroe actualizado exitosamente
+ *         description: Personaje actualizado exitosamente
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Hero'
+ *               $ref: '#/components/schemas/Personaje'
  *       404:
- *         description: Héroe no encontrado
+ *         description: Personaje no encontrado
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put("/heroes/:id", async (req, res) => {
-    try {
-        const updatedHero = await heroService.updateHero(req.params.id, req.body);
-        res.json(updatedHero);
-    } catch (error) {
-        res.status(404).json({ error: error.message });
-    }
+router.put('/personajes/:id',
+    [
+        check('nombre').optional().not().isEmpty().withMessage('El nombre no puede estar vacío'),
+        check('tipo').optional().isIn(['superheroe', 'villano']).withMessage('El tipo debe ser superheroe o villano')
+    ],
+    async (req, res) => {
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.status(400).json({ errors: errors.array() });
+        }
+        try {
+            const actualizado = await personajeService.updatePersonaje(req.params.id, req.body);
+            res.json(actualizado);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
 });
 
 /**
  * @swagger
- * /api/heroes/{id}:
+ * /api/personajes/{id}:
  *   delete:
- *     summary: Eliminar un superhéroe
- *     description: Elimina un superhéroe de la base de datos
- *     tags: [Héroes]
+ *     summary: Eliminar un personaje
+ *     description: Elimina un personaje de la base de datos
+ *     tags: [Personajes]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID del héroe a eliminar
+ *         description: ID del personaje a eliminar
  *     responses:
  *       200:
- *         description: Héroe eliminado exitosamente
+ *         description: Personaje eliminado exitosamente
  *         content:
  *           application/json:
  *             schema:
@@ -298,18 +252,18 @@ router.put("/heroes/:id", async (req, res) => {
  *                 message:
  *                   type: string
  *       404:
- *         description: Héroe no encontrado
+ *         description: Personaje no encontrado
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete('/heroes/:id', async (req, res) => {
+router.delete('/personajes/:id', async (req, res) => {
     try {
-        const result = await heroService.deleteHero(req.params.id);
-        res.json(result);
-    } catch (error) {
-        res.status(404).json({ error: error.message });
+        const eliminado = await personajeService.deletePersonaje(req.params.id);
+        res.json(eliminado);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 

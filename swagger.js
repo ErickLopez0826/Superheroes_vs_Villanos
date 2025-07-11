@@ -4,9 +4,9 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'API de Superhéroes',
+      title: 'API de Personajes',
       version: '1.0.0',
-      description: 'API REST para gestionar superhéroes y villanos con arquitectura limpia',
+      description: 'API REST para gestionar personajes (superhéroes y villanos) y peleas entre ellos. Solo se permiten peleas entre un superhéroe y un villano.',
       contact: {
         name: 'Desarrollador',
         email: 'tu-email@ejemplo.com'
@@ -27,27 +27,16 @@ const options = {
         }
       },
       schemas: {
-        Hero: {
+        Personaje: {
           type: 'object',
           properties: {
-            id: { type: 'integer', description: 'ID único del héroe' },
-            name: { type: 'string', description: 'Nombre real del héroe' },
-            alias: { type: 'string', description: 'Alias o nombre de superhéroe' },
-            city: { type: 'string', description: 'Ciudad de origen del héroe' },
-            team: { type: 'string', description: 'Equipo al que pertenece' }
+            id: { type: 'integer', description: 'ID único del personaje' },
+            nombre: { type: 'string', description: 'Nombre del personaje' },
+            ciudad: { type: 'string', description: 'Ciudad de origen' },
+            tipo: { type: 'string', enum: ['superheroe', 'villano'], description: 'Tipo de personaje' },
+            vida: { type: 'integer', description: 'Vida actual del personaje', default: 100 }
           },
-          required: ['name', 'alias']
-        },
-        Villain: {
-          type: 'object',
-          properties: {
-            id: { type: 'integer', description: 'ID único del villano' },
-            name: { type: 'string', description: 'Nombre real del villano' },
-            alias: { type: 'string', description: 'Alias o nombre de villano' },
-            city: { type: 'string', description: 'Ciudad de origen del villano' },
-            team: { type: 'string', description: 'Equipo al que pertenece' }
-          },
-          required: ['name', 'alias']
+          required: ['nombre', 'tipo']
         },
         Error: {
           type: 'object',
@@ -59,7 +48,8 @@ const options = {
     },
     security: [{ bearerAuth: [] }]
   },
-  apis: ['./controllers/*.js']
+  apis: ['./controllers/*.js'],
 };
 
-export const specs = swaggerJsdoc(options); 
+const swaggerSpec = swaggerJsdoc(options);
+export default swaggerSpec; 
