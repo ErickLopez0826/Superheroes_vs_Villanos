@@ -8,6 +8,7 @@ import authController from './controllers/authController.js'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import userRepository from './repositories/userRepository.js'
+import teamController from './controllers/teamController.js'
 
 const app = express()
 const JWT_SECRET = 'supersecretkey123' // En producción, usa variable de entorno
@@ -44,6 +45,7 @@ app.use(authenticateJWT)
 // Endpoints protegidos
 app.use('/api', fightController)
 app.use('/api', heroController)
+app.use('/api/equipos', teamController)
 
 // Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {

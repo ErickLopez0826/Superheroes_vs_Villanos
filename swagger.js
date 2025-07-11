@@ -46,7 +46,14 @@ const options = {
         }
       }
     },
-    security: [{ bearerAuth: [] }]
+    security: [{ bearerAuth: [] }],
+    tags: [
+      { name: 'Auth', description: 'Autenticación' },
+      { name: 'Usuarios', description: 'Gestión de usuarios' },
+      { name: 'Personajes', description: 'Gestión de personajes (superhéroes y villanos)' },
+      { name: 'Equipos', description: 'Gestión de equipos' },
+      { name: 'Peleas', description: 'Gestión de peleas' }
+    ]
   },
   apis: ['./controllers/*.js'],
 };

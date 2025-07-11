@@ -6,7 +6,7 @@ const filePath = './data/personajes.json'
 async function getPersonajes() {
     try {
         const data = await fs.readJson(filePath)
-        return data.map(p => new Personaje(p.id, p.nombre, p.ciudad, p.tipo))
+        return data.map(p => new Personaje(p.id, p.nombre, p.ciudad, p.tipo, p.equipo))
     } catch (error) {
         console.error(error)
         return []

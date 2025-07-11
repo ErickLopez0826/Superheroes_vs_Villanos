@@ -1,10 +1,11 @@
 class Personaje {
-    constructor(id, nombre, ciudad, tipo) {
+    constructor(id, nombre, ciudad, tipo, equipo) {
         this.id = id;
         this.nombre = nombre;
         this.ciudad = ciudad;
         this.tipo = tipo; // 'superheroe' o 'villano'
         this.vida = 100;
+        if (equipo) this.equipo = equipo;
     }
 
     golpeBasico(objetivo) {

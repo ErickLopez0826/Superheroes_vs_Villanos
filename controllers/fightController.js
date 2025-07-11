@@ -118,7 +118,7 @@ router.post(
  * @swagger
  * /api/fights/teams:
  *   post:
- *     summary: Simular una pelea entre equipos de 3 superhéroes vs 3 villanos
+ *     summary: Simular una pelea entre equipos de 3 superhéroes vs 3 villanos usando nombres de equipo
  *     tags: [Peleas]
  *     requestBody:
  *       required: true
@@ -127,23 +127,17 @@ router.post(
  *           schema:
  *             type: object
  *             properties:
- *               heroes:
- *                 type: array
- *                 items:
- *                   type: integer
- *                 minItems: 3
- *                 maxItems: 3
- *                 description: IDs de los superhéroes
- *               villanos:
- *                 type: array
- *                 items:
- *                   type: integer
- *                 minItems: 3
- *                 maxItems: 3
- *                 description: IDs de los villanos
+ *               equipoHeroes:
+ *                 type: string
+ *                 description: Nombre del equipo de superhéroes (debe tener 3 miembros)
+ *                 example: Avengers
+ *               equipoVillanos:
+ *                 type: string
+ *                 description: Nombre del equipo de villanos (debe tener 3 miembros)
+ *                 example: LegionDelMal
  *             required:
- *               - heroes
- *               - villanos
+ *               - equipoHeroes
+ *               - equipoVillanos
  *     responses:
  *       200:
  *         description: Resultado de la pelea por equipos
@@ -158,6 +152,19 @@ router.post(
  *                   type: array
  *                   items:
  *                     type: object
+ *                     properties:
+ *                       ronda:
+ *                         type: integer
+ *                       heroe:
+ *                         type: string
+ *                       villano:
+ *                         type: string
+ *                       historia:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                       resultado:
+ *                         type: string
  *       400:
  *         description: Datos inválidos o enfrentamiento no permitido
  *         content:
@@ -167,41 +174,42 @@ router.post(
  */
 router.post('/fights/teams',
   [
-    body('heroes').isArray({ min: 3, max: 3 }).withMessage('heroes debe ser un array de 3 IDs'),
-    body('villanos').isArray({ min: 3, max: 3 }).withMessage('villanos debe ser un array de 3 IDs'),
-    body('heroes.*').isInt({ min: 1 }).withMessage('Todos los IDs de héroes deben ser enteros positivos mayores a 0'),
-    body('villanos.*').isInt({ min: 1 }).withMessage('Todos los IDs de villanos deben ser enteros positivos mayores a 0')
+    body('equipoHeroes').isString().notEmpty().withMessage('equipoHeroes es obligatorio'),
+    body('equipoVillanos').isString().notEmpty().withMessage('equipoVillanos es obligatorio')
   ],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ error: errors.array() });
     }
-    const { heroes, villanos } = req.body;
+    const { equipoHeroes, equipoVillanos } = req.body;
     const personajes = await personajeService.getAllPersonajes();
-    const equipoHeroes = heroes.map(id => personajes.find(p => p.id === id && p.tipo === 'superheroe'));
-    const equipoVillanos = villanos.map(id => personajes.find(p => p.id === id && p.tipo === 'villano'));
-    if (equipoHeroes.includes(undefined) || equipoVillanos.includes(undefined)) {
-      return res.status(400).json({ error: 'Todos los IDs deben ser válidos y corresponder a su tipo'});
+    // Buscar los 3 héroes y 3 villanos por nombre de equipo
+    const heroes = personajes.filter(p => p.equipo === equipoHeroes && p.tipo === 'superheroe').slice(0, 3);
+    const villanos = personajes.filter(p => p.equipo === equipoVillanos && p.tipo === 'villano').slice(0, 3);
+    if (heroes.length !== 3 || villanos.length !== 3) {
+      return res.status(400).json({ error: 'Ambos equipos deben tener exactamente 3 miembros del tipo correcto' });
     }
-    // Simulación de pelea por rondas
+    // Inicializar vida
+    let vivosHeroes = heroes.map(p => ({ ...p, vida: 100 }));
+    let vivosVillanos = villanos.map(p => ({ ...p, vida: 100 }));
     let rondas = [];
-    let vivosHeroes = equipoHeroes.map(p => ({ ...p }));
-    let vivosVillanos = equipoVillanos.map(p => ({ ...p }));
     for (let i = 0; i < 3; i++) {
       if (vivosHeroes.length === 0 || vivosVillanos.length === 0) break;
       let heroe = vivosHeroes[0];
       let villano = vivosVillanos[0];
-      // Pelea entre el primer héroe y el primer villano
       let ronda = { ronda: i+1, heroe: heroe.nombre, villano: villano.nombre, historia: [] };
       let turno = 0;
       while (heroe.vida > 0 && villano.vida > 0) {
+        // Turno del héroe
         if (turno % 2 === 0) {
-          villano.vida -= 30; // golpe especial
-          ronda.historia.push(`${heroe.nombre} golpea a ${villano.nombre} (-30 vida)`);
+          const ataque = calcularAtaque();
+          villano.vida += ataque; // ataque es negativo
+          ronda.historia.push(`${heroe.nombre} ataca a ${villano.nombre} (${descripcionAtaque(ataque)})`);
         } else {
-          heroe.vida -= 30;
-          ronda.historia.push(`${villano.nombre} golpea a ${heroe.nombre} (-30 vida)`);
+          const ataque = calcularAtaque();
+          heroe.vida += ataque;
+          ronda.historia.push(`${villano.nombre} ataca a ${heroe.nombre} (${descripcionAtaque(ataque)})`);
         }
         turno++;
       }
@@ -219,217 +227,19 @@ router.post('/fights/teams',
   }
 );
 
-/**
- * @swagger
- * /api/equipos:
- *   post:
- *     summary: Crear un equipo de 3 personajes del mismo tipo
- *     tags: [Peleas]
- *     parameters:
- *       - in: query
- *         name: nombreEquipo
- *         required: true
- *         schema:
- *           type: string
- *         description: Nombre del equipo
- *       - in: query
- *         name: ids
- *         required: true
- *         schema:
- *           type: string
- *         description: IDs de los personajes separados por coma (ejemplo: 1,2,3)
- *     responses:
- *       200:
- *         description: Equipo creado exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 equipo:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Personaje'
- *       400:
- *         description: Datos inválidos o personajes de distinto tipo
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-router.post('/equipos', async (req, res) => {
-  const nombreEquipo = req.query.nombreEquipo;
-  const idsParam = req.query.ids;
-  if (!nombreEquipo || !idsParam) {
-    return res.status(400).json({ error: 'nombreEquipo e ids son obligatorios' });
-  }
-  const ids = idsParam.split(',').map(id => parseInt(id.trim(), 10));
-  if (ids.length !== 3 || ids.some(id => isNaN(id) || id <= 0)) {
-    return res.status(400).json({ error: 'Debes enviar exactamente 3 IDs válidos, enteros y positivos' });
-  }
-  const personajes = await personajeService.getAllPersonajes();
-  const seleccionados = ids.map(id => personajes.find(p => p.id === id));
-  if (seleccionados.includes(undefined)) {
-    return res.status(400).json({ error: 'Todos los IDs deben existir' });
-  }
-  const tipoEquipo = seleccionados[0].tipo;
-  if (!seleccionados.every(p => p.tipo === tipoEquipo)) {
-    return res.status(400).json({ error: 'No se pueden mezclar villanos y superhéroes en el mismo equipo' });
-  }
-  // Asignar nombre de equipo
-  const actualizados = personajes.map(p => {
-    if (ids.includes(p.id)) {
-      return { ...p, equipo: nombreEquipo };
-    }
-    return p;
-  });
-  await personajeService.updateAllPersonajes(actualizados);
-  res.json({ equipo: actualizados.filter(p => ids.includes(p.id)) });
-});
+// Función para calcular el tipo de ataque
+function calcularAtaque() {
+  const prob = Math.random();
+  if (prob < 0.15) return -45; // 15% crítico
+  if (prob < 0.5) return -30; // 35% especial
+  return -5; // 50% normal
+}
 
-/**
- * @swagger
- * /api/equipos/superheroes:
- *   post:
- *     summary: Crear un equipo de 3 superhéroes
- *     tags: [Peleas]
- *     parameters:
- *       - in: query
- *         name: nombreEquipo
- *         required: true
- *         schema:
- *           type: string
- *         description: Nombre del equipo
- *       - in: query
- *         name: id1
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID del primer superhéroe
- *       - in: query
- *         name: id2
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID del segundo superhéroe
- *       - in: query
- *         name: id3
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID del tercer superhéroe
- *     responses:
- *       200:
- *         description: Equipo de superhéroes creado exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 equipo:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Personaje'
- *       400:
- *         description: Datos inválidos o personajes no son superhéroes
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-router.post('/equipos/superheroes', async (req, res) => {
-  const nombreEquipo = req.query.nombreEquipo;
-  const ids = [req.query.id1, req.query.id2, req.query.id3].map(id => parseInt(id, 10));
-  if (!nombreEquipo || ids.some(id => isNaN(id) || id <= 0)) {
-    return res.status(400).json({ error: 'nombreEquipo e ids válidos son obligatorios' });
-  }
-  const personajes = await personajeService.getAllPersonajes();
-  const seleccionados = ids.map(id => personajes.find(p => p.id === id && p.tipo === 'superheroe'));
-  if (seleccionados.includes(undefined)) {
-    return res.status(400).json({ error: 'Todos los IDs deben existir y ser superhéroes' });
-  }
-  // Asignar nombre de equipo
-  const actualizados = personajes.map(p => {
-    if (ids.includes(p.id)) {
-      return { ...p, equipo: nombreEquipo };
-    }
-    return p;
-  });
-  await personajeService.updateAllPersonajes(actualizados);
-  res.json({ equipo: actualizados.filter(p => ids.includes(p.id)) });
-});
-
-/**
- * @swagger
- * /api/equipos/villanos:
- *   post:
- *     summary: Crear un equipo de 3 villanos
- *     tags: [Peleas]
- *     parameters:
- *       - in: query
- *         name: nombreEquipo
- *         required: true
- *         schema:
- *           type: string
- *         description: Nombre del equipo
- *       - in: query
- *         name: id1
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID del primer villano
- *       - in: query
- *         name: id2
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID del segundo villano
- *       - in: query
- *         name: id3
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID del tercer villano
- *     responses:
- *       200:
- *         description: Equipo de villanos creado exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 equipo:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Personaje'
- *       400:
- *         description: Datos inválidos o personajes no son villanos
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-router.post('/equipos/villanos', async (req, res) => {
-  const nombreEquipo = req.query.nombreEquipo;
-  const ids = [req.query.id1, req.query.id2, req.query.id3].map(id => parseInt(id, 10));
-  if (!nombreEquipo || ids.some(id => isNaN(id) || id <= 0)) {
-    return res.status(400).json({ error: 'nombreEquipo e ids válidos son obligatorios' });
-  }
-  const personajes = await personajeService.getAllPersonajes();
-  const seleccionados = ids.map(id => personajes.find(p => p.id === id && p.tipo === 'villano'));
-  if (seleccionados.includes(undefined)) {
-    return res.status(400).json({ error: 'Todos los IDs deben existir y ser villanos' });
-  }
-  // Asignar nombre de equipo
-  const actualizados = personajes.map(p => {
-    if (ids.includes(p.id)) {
-      return { ...p, equipo: nombreEquipo };
-    }
-    return p;
-  });
-  await personajeService.updateAllPersonajes(actualizados);
-  res.json({ equipo: actualizados.filter(p => ids.includes(p.id)) });
-});
+function descripcionAtaque(valor) {
+  if (valor === -45) return 'ataque crítico (-45 vida)';
+  if (valor === -30) return 'ataque especial (-30 vida)';
+  return 'ataque normal (-5 vida)';
+}
 
 /**
  * @swagger
