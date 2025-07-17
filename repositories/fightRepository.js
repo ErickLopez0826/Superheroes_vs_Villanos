@@ -1,20 +1,37 @@
-import fs from 'fs-extra'
-
-const filePath = './data/fights.json'
+import { connectDB } from '../data/mongoClient.js';
 
 async function getFights() {
-    try {
-        return await fs.readJson(filePath)
-    } catch (error) {
-        return []
-    }
+    const db = await connectDB();
+    return db.collection('fights').find({}).toArray();
 }
 
-async function saveFights(fights) {
-    await fs.writeJson(filePath, fights, { spaces: 2 })
+async function getFightById(fightId) {
+    const db = await connectDB();
+    return db.collection('fights').findOne({ fightId: Number(fightId) });
+}
+
+async function addFight(fight) {
+    const db = await connectDB();
+    await db.collection('fights').insertOne(fight);
+}
+
+async function updateFight(fightId, updatedFight) {
+    const db = await connectDB();
+    await db.collection('fights').updateOne(
+        { fightId: Number(fightId) },
+        { $set: updatedFight }
+    );
+}
+
+async function deleteFight(fightId) {
+    const db = await connectDB();
+    await db.collection('fights').deleteOne({ fightId: Number(fightId) });
 }
 
 export default {
     getFights,
-    saveFights
-} 
+    getFightById,
+    addFight,
+    updateFight,
+    deleteFight
+}; 

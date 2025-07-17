@@ -42,13 +42,14 @@ const JWT_SECRET = 'supersecretkey123';
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
+// POST /api/login
 router.post('/login', async (req, res) => {
   const { name, password } = req.body;
   if (name === 'admin' && password === '1234') {
     const token = jwt.sign({ name }, JWT_SECRET, { expiresIn: '2h' });
     return res.json({ token });
   }
-  // Buscar usuario en users.json
+  // Buscar usuario en MongoDB
   const users = await userRepository.getUsers();
   const user = users.find(u => u.name === name);
   if (!user) {

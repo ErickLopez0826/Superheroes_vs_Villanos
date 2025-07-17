@@ -1,44 +1,37 @@
-import fs from 'fs-extra'
-import { Personaje } from '../models/Personaje.js'
-
-const filePath = './api-superheroes/data/personajes.json'
+import { connectDB } from '../data/mongoClient.js';
 
 async function getPersonajes() {
-    try {
-        const data = await fs.readJson(filePath)
-        return data.map(p => new Personaje(
-            p.id, p.nombre, p.ciudad, p.tipo, p.equipo,
-            p.nivel || 1, p.experiencia || 0, p.escudo || 0, p.dañoUltimate || 0, p.umbralUltimate || 150, p.ultimateDisponible || false
-        ))
-    } catch (error) {
-        console.error(error)
-        return []
-    }
+    const db = await connectDB();
+    return db.collection('personajes').find({}).toArray();
 }
 
-async function savePersonajes(personajes) {
-    try {
-        // Guardar todos los atributos relevantes con formato bonito
-        await fs.writeJson(filePath, personajes.map(p => ({
-            id: p.id,
-            nombre: p.nombre,
-            ciudad: p.ciudad,
-            tipo: p.tipo,
-            equipo: p.equipo,
-            nivel: p.nivel,
-            experiencia: p.experiencia,
-            escudo: p.escudo,
-            vida: p.vida,
-            dañoUltimate: p.dañoUltimate,
-            umbralUltimate: p.umbralUltimate,
-            ultimateDisponible: p.ultimateDisponible
-        })), { spaces: 2 })
-    } catch (error) {
-        console.error(error)
-    }
+async function getPersonajeById(id) {
+    const db = await connectDB();
+    return db.collection('personajes').findOne({ id: Number(id) });
+}
+
+async function addPersonaje(personaje) {
+    const db = await connectDB();
+    await db.collection('personajes').insertOne(personaje);
+}
+
+async function updatePersonaje(id, updatedPersonaje) {
+    const db = await connectDB();
+    await db.collection('personajes').updateOne(
+        { id: Number(id) },
+        { $set: updatedPersonaje }
+    );
+}
+
+async function deletePersonaje(id) {
+    const db = await connectDB();
+    await db.collection('personajes').deleteOne({ id: Number(id) });
 }
 
 export default {
     getPersonajes,
-    savePersonajes
-}
+    getPersonajeById,
+    addPersonaje,
+    updatePersonaje,
+    deletePersonaje
+};

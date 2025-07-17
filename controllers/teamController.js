@@ -1,5 +1,6 @@
 import express from "express";
 import personajeService from '../services/heroService.js';
+import { connectDB } from '../data/mongoClient.js';
 
 const router = express.Router();
 
@@ -23,15 +24,19 @@ router.post('/', async (req, res) => {
   if (!seleccionados.every(p => p.tipo === tipoEquipo)) {
     return res.status(400).json({ error: 'No se pueden mezclar villanos y superhéroes en el mismo equipo' });
   }
-  // Asignar nombre de equipo
-  const actualizados = personajes.map(p => {
-    if (ids.includes(p.id)) {
-      return { ...p, equipo: nombreEquipo };
-    }
-    return p;
-  });
-  await personajeService.updateAllPersonajes(actualizados);
-  res.json({ equipo: actualizados.filter(p => ids.includes(p.id)) });
+  // Asignar nombre de equipo en MongoDB
+  const db = await connectDB();
+  await db.collection('personajes').updateMany(
+    { id: { $in: ids } },
+    { $set: { equipo: nombreEquipo } }
+  );
+  // Remover el nombre de equipo de personajes que ya no estén en el equipo
+  await db.collection('personajes').updateMany(
+    { equipo: nombreEquipo, id: { $nin: ids } },
+    { $unset: { equipo: "" } }
+  );
+  const equipo = await db.collection('personajes').find({ id: { $in: ids } }).toArray();
+  res.json({ equipo });
 });
 
 /**
@@ -66,28 +71,27 @@ router.post('/', async (req, res) => {
  *       400:
  *         description: Datos inválidos o personajes no son superhéroes
  */
+// Crear equipo de superhéroes (POST /equipos/superheroes)
 router.post('/superheroes', async (req, res) => {
   const { nombreEquipo, ids } = req.body;
   if (!nombreEquipo || !Array.isArray(ids) || ids.length !== 3) {
     return res.status(400).json({ error: 'nombreEquipo y 3 ids son obligatorios' });
   }
-  const personajes = await personajeService.getAllPersonajes();
-  const seleccionados = ids.map(id => personajes.find(p => p.id === id && p.tipo === 'superheroe'));
-  if (seleccionados.includes(undefined)) {
+  const db = await connectDB();
+  const personajes = await db.collection('personajes').find({ id: { $in: ids } }).toArray();
+  if (personajes.length !== 3 || personajes.some(p => p.tipo !== 'superheroe')) {
     return res.status(400).json({ error: 'Todos los IDs deben existir y ser superhéroes' });
   }
-  // Asignar nombre de equipo solo a los seleccionados
-  const actualizados = personajes.map(p => {
-    if (ids.includes(p.id)) {
-      return { ...p, equipo: nombreEquipo };
-    } else if (p.equipo === nombreEquipo) {
-      // Remover del equipo si ya no está en ids
-      return { ...p, equipo: undefined };
-    }
-    return p;
-  });
-  await personajeService.updateAllPersonajes(actualizados);
-  res.json({ equipo: actualizados.filter(p => ids.includes(p.id)) });
+  await db.collection('personajes').updateMany(
+    { id: { $in: ids } },
+    { $set: { equipo: nombreEquipo } }
+  );
+  await db.collection('personajes').updateMany(
+    { equipo: nombreEquipo, id: { $nin: ids } },
+    { $unset: { equipo: "" } }
+  );
+  const equipo = await db.collection('personajes').find({ id: { $in: ids } }).toArray();
+  res.json({ equipo });
 });
 
 /**
@@ -122,28 +126,27 @@ router.post('/superheroes', async (req, res) => {
  *       400:
  *         description: Datos inválidos o personajes no son villanos
  */
+// Crear equipo de villanos (POST /equipos/villanos)
 router.post('/villanos', async (req, res) => {
   const { nombreEquipo, ids } = req.body;
   if (!nombreEquipo || !Array.isArray(ids) || ids.length !== 3) {
     return res.status(400).json({ error: 'nombreEquipo y 3 ids son obligatorios' });
   }
-  const personajes = await personajeService.getAllPersonajes();
-  const seleccionados = ids.map(id => personajes.find(p => p.id === id && p.tipo === 'villano'));
-  if (seleccionados.includes(undefined)) {
+  const db = await connectDB();
+  const personajes = await db.collection('personajes').find({ id: { $in: ids } }).toArray();
+  if (personajes.length !== 3 || personajes.some(p => p.tipo !== 'villano')) {
     return res.status(400).json({ error: 'Todos los IDs deben existir y ser villanos' });
   }
-  // Asignar nombre de equipo solo a los seleccionados
-  const actualizados = personajes.map(p => {
-    if (ids.includes(p.id)) {
-      return { ...p, equipo: nombreEquipo };
-    } else if (p.equipo === nombreEquipo) {
-      // Remover del equipo si ya no está en ids
-      return { ...p, equipo: undefined };
-    }
-    return p;
-  });
-  await personajeService.updateAllPersonajes(actualizados);
-  res.json({ equipo: actualizados.filter(p => ids.includes(p.id)) });
+  await db.collection('personajes').updateMany(
+    { id: { $in: ids } },
+    { $set: { equipo: nombreEquipo } }
+  );
+  await db.collection('personajes').updateMany(
+    { equipo: nombreEquipo, id: { $nin: ids } },
+    { $unset: { equipo: "" } }
+  );
+  const equipo = await db.collection('personajes').find({ id: { $in: ids } }).toArray();
+  res.json({ equipo });
 });
 
 /**
@@ -178,33 +181,32 @@ router.post('/villanos', async (req, res) => {
  *       400:
  *         description: Datos inválidos o equipo no encontrado
  */
+// Modificar equipo (PUT /equipos)
 router.put('/', async (req, res) => {
   const { nombreEquipo, ids } = req.body;
   if (!nombreEquipo || !Array.isArray(ids) || ids.length !== 3) {
     return res.status(400).json({ error: 'nombreEquipo y 3 ids son obligatorios' });
   }
-  const personajes = await personajeService.getAllPersonajes();
-  const integrantesActuales = personajes.filter(p => p.equipo === nombreEquipo);
+  const db = await connectDB();
+  const integrantesActuales = await db.collection('personajes').find({ equipo: nombreEquipo }).toArray();
   if (integrantesActuales.length === 0) {
     return res.status(400).json({ error: 'El equipo no existe' });
   }
   const tipoEquipo = integrantesActuales[0].tipo;
-  const seleccionados = ids.map(id => personajes.find(p => p.id === id && p.tipo === tipoEquipo));
-  if (seleccionados.includes(undefined)) {
+  const seleccionados = await db.collection('personajes').find({ id: { $in: ids }, tipo: tipoEquipo }).toArray();
+  if (seleccionados.length !== 3) {
     return res.status(400).json({ error: `Todos los IDs deben existir y ser del tipo ${tipoEquipo}` });
   }
-  // Asignar nombre de equipo solo a los seleccionados
-  const actualizados = personajes.map(p => {
-    if (ids.includes(p.id)) {
-      return { ...p, equipo: nombreEquipo };
-    } else if (p.equipo === nombreEquipo) {
-      // Remover del equipo si ya no está en ids
-      return { ...p, equipo: undefined };
-    }
-    return p;
-  });
-  await personajeService.updateAllPersonajes(actualizados);
-  res.json({ equipo: actualizados.filter(p => ids.includes(p.id)) });
+  await db.collection('personajes').updateMany(
+    { id: { $in: ids } },
+    { $set: { equipo: nombreEquipo } }
+  );
+  await db.collection('personajes').updateMany(
+    { equipo: nombreEquipo, id: { $nin: ids } },
+    { $unset: { equipo: "" } }
+  );
+  const equipo = await db.collection('personajes').find({ id: { $in: ids } }).toArray();
+  res.json({ equipo });
 });
 
 /**
@@ -226,23 +228,21 @@ router.put('/', async (req, res) => {
  *       400:
  *         description: Equipo no encontrado
  */
+// Eliminar equipo (DELETE /equipos)
 router.delete('/', async (req, res) => {
   const nombreEquipo = req.query.nombreEquipo;
   if (!nombreEquipo) {
     return res.status(400).json({ error: 'nombreEquipo es obligatorio' });
   }
-  const personajes = await personajeService.getAllPersonajes();
-  const existe = personajes.some(p => p.equipo === nombreEquipo);
+  const db = await connectDB();
+  const existe = await db.collection('personajes').countDocuments({ equipo: nombreEquipo });
   if (!existe) {
     return res.status(400).json({ error: 'El equipo no existe' });
   }
-  const actualizados = personajes.map(p => {
-    if (p.equipo === nombreEquipo) {
-      return { ...p, equipo: undefined };
-    }
-    return p;
-  });
-  await personajeService.updateAllPersonajes(actualizados);
+  await db.collection('personajes').updateMany(
+    { equipo: nombreEquipo },
+    { $unset: { equipo: "" } }
+  );
   res.json({ message: 'Equipo eliminado exitosamente' });
 });
 
@@ -302,7 +302,8 @@ router.delete('/', async (req, res) => {
 router.get('/', async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
-  const personajes = await personajeService.getAllPersonajes();
+  const db = await connectDB();
+  const personajes = await db.collection('personajes').find({ equipo: { $exists: true, $ne: null } }).toArray();
   // Agrupar por nombre de equipo
   const equiposObj = {};
   personajes.forEach(p => {

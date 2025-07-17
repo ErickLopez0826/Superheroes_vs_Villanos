@@ -43,6 +43,7 @@ const JWT_SECRET = 'supersecretkey123';
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
+// POST registrar usuario
 router.post(
   '/users',
   [
@@ -60,8 +61,10 @@ router.post(
       return res.status(400).json({ error: 'El usuario ya existe' });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    users.push({ name, password: hashedPassword });
-    await userRepository.saveUsers(users);
+    // Asignar un id incremental
+    const newId = users.length > 0 ? Math.max(...users.map(u => u.id || 0)) + 1 : 1;
+    const newUser = { id: newId, name, password: hashedPassword };
+    await userRepository.addUser(newUser);
     const token = jwt.sign({ name }, JWT_SECRET, { expiresIn: '2h' });
     res.json({ token });
   }
@@ -83,6 +86,7 @@ router.post(
  *               items:
  *                 type: object
  */
+// GET todos los usuarios
 router.get('/users', async (req, res) => {
   const users = await userRepository.getUsers();
   res.json(users);

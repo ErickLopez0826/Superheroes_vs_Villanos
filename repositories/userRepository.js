@@ -1,20 +1,37 @@
-import fs from 'fs-extra'
-
-const filePath = './data/users.json'
+import { connectDB } from '../data/mongoClient.js';
 
 async function getUsers() {
-    try {
-        return await fs.readJson(filePath)
-    } catch (error) {
-        return []
-    }
+    const db = await connectDB();
+    return db.collection('users').find({}).toArray();
 }
 
-async function saveUsers(users) {
-    await fs.writeJson(filePath, users)
+async function getUserById(id) {
+    const db = await connectDB();
+    return db.collection('users').findOne({ id: Number(id) });
+}
+
+async function addUser(user) {
+    const db = await connectDB();
+    await db.collection('users').insertOne(user);
+}
+
+async function updateUser(id, updatedUser) {
+    const db = await connectDB();
+    await db.collection('users').updateOne(
+        { id: Number(id) },
+        { $set: updatedUser }
+    );
+}
+
+async function deleteUser(id) {
+    const db = await connectDB();
+    await db.collection('users').deleteOne({ id: Number(id) });
 }
 
 export default {
     getUsers,
-    saveUsers
-} 
+    getUserById,
+    addUser,
+    updateUser,
+    deleteUser
+}; 

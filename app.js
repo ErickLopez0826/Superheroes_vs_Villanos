@@ -10,6 +10,8 @@ import bcrypt from 'bcryptjs'
 import userRepository from './repositories/userRepository.js'
 import teamController from './controllers/teamController.js'
 import cors from 'cors'
+import mongoose from 'mongoose';
+import { MongoClient } from 'mongodb';
 
 const app = express()
 app.use(cors({

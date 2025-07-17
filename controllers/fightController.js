@@ -43,6 +43,7 @@ const router = express.Router();
  *                   items:
  *                     type: object
  */
+// GET todas las peleas (paginado)
 router.get('/fights', async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
@@ -101,6 +102,7 @@ router.get('/fights', async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
+// POST pelea 1 vs 1
 router.post(
   '/fights',
   [
@@ -141,13 +143,11 @@ router.post(
         atacante = sim2;
         defensor = sim1;
       }
-      // Si tiene ultimate disponible, lo usa
       if (atacante.ultimateDisponible) {
         ataque = atacante.usarUltimate();
         desc = `¡Ultimate! (${ataque} daño, ignora escudo)`;
         esUltimate = true;
       } else {
-        // Probabilidad de crítico 40%
         const prob = Math.random();
         if (prob < 0.4) {
           let base = (Math.random() < 0.5) ? atacante.getAtaqueBasico() : atacante.getAtaqueEspecial();
@@ -188,7 +188,24 @@ router.post(
       p.umbralUltimate = sim.umbralUltimate;
       p.ultimateDisponible = sim.ultimateDisponible;
     }
-    await personajeService.updateAllPersonajes(personajes);
+    // Guardar pelea en MongoDB
+    const fights = await fightRepository.getFights();
+    const fightId = fights.length > 0 ? Math.max(...fights.map(f => f.fightId)) + 1 : 1;
+    await fightRepository.addFight({
+      fightId,
+      personaje1: {
+        id: sim1.id,
+        nombre: sim1.nombre,
+        tipo: sim1.tipo
+      },
+      personaje2: {
+        id: sim2.id,
+        nombre: sim2.nombre,
+        tipo: sim2.tipo
+      },
+      ganador: ganador.nombre,
+      historia
+    });
     res.json({
       personaje1: {
         id: sim1.id,
@@ -218,7 +235,7 @@ router.post(
 
 /**
  * @swagger
- * /api/fights/teams/start:
+ * /api/fights/teams:
  *   post:
  *     summary: Iniciar una nueva pelea entre equipos de 3 superhéroes vs 3 villanos
  *     tags: [Peleas]
@@ -231,69 +248,31 @@ router.post(
  *             properties:
  *               equipoHeroes:
  *                 type: string
- *                 description: Nombre del equipo de superhéroes
+ *                 description: Nombre del equipo de superhéroes (debe tener 3 miembros)
+ *                 example: LIGADELJUSTICIA
  *               equipoVillanos:
  *                 type: string
- *                 description: Nombre del equipo de villanos
+ *                 description: Nombre del equipo de villanos (debe tener 3 miembros)
+ *                 example: LEGIONDELMAL
  *             required:
  *               - equipoHeroes
  *               - equipoVillanos
  *     responses:
  *       200:
- *         description: Resultado de la pelea por equipos
+ *         description: Pelea iniciada exitosamente
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
+ *                 fightId:
+ *                   type: integer
  *                 resultado:
  *                   type: string
  *                 rondas:
  *                   type: array
  *                   items:
  *                     type: object
- *                 heroes:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: integer
- *                       nombre:
- *                         type: string
- *                       tipo:
- *                         type: string
- *                       nivel:
- *                         type: integer
- *                       experiencia:
- *                         type: integer
- *                       escudo:
- *                         type: integer
- *                       vida:
- *                         type: number
- *                       ultimateDisponible:
- *                         type: boolean
- *                 villanos:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: integer
- *                       nombre:
- *                         type: string
- *                       tipo:
- *                         type: string
- *                       nivel:
- *                         type: integer
- *                       experiencia:
- *                         type: integer
- *                       escudo:
- *                         type: integer
- *                       vida:
- *                         type: number
- *                       ultimateDisponible:
- *                         type: boolean
  *       400:
  *         description: Datos inválidos o enfrentamiento no permitido
  *         content:
@@ -301,121 +280,89 @@ router.post(
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/fights/teams/start',
-  [
-    body('equipoHeroes').isString().notEmpty().withMessage('equipoHeroes es obligatorio'),
-    body('equipoVillanos').isString().notEmpty().withMessage('equipoVillanos es obligatorio'),
-    body('rondas').isArray({ min: 1 }).withMessage('Debes enviar al menos un round')
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ error: errors.array() });
-    }
-    const { equipoHeroes, equipoVillanos, rondas } = req.body;
-    const personajes = await personajeService.getAllPersonajes();
-    const heroes = personajes.filter(p => p.equipo === equipoHeroes && p.tipo === 'superheroe').slice(0, 3);
-    const villanos = personajes.filter(p => p.equipo === equipoVillanos && p.tipo === 'villano').slice(0, 3);
-    if (heroes.length !== 3 || villanos.length !== 3) {
-      return res.status(400).json({ error: 'Ambos equipos deben tener exactamente 3 miembros del tipo correcto' });
-    }
-    let vivosHeroes = heroes.map(p => ({ ...p, vida: 100 }));
-    let vivosVillanos = villanos.map(p => ({ ...p, vida: 100 }));
-    let historial = [];
-    let rondaNum = 1;
-    let peleaFinalizada = false;
-    for (const round of rondas) {
-      if (vivosHeroes.length === 0 || vivosVillanos.length === 0) { peleaFinalizada = true; break; }
-      let atacante, defensor, tipoGolpe, daño;
-      tipoGolpe = round.tipoGolpe;
-      if (!['basico', 'especial', 'critico'].includes(tipoGolpe)) {
-        return res.status(400).json({ error: `Tipo de golpe inválido en ronda ${rondaNum}` });
-      }
-      if (round.atacante === 'heroe') {
-        atacante = vivosHeroes[0];
-        defensor = vivosVillanos[0];
-      } else if (round.atacante === 'villano') {
-        atacante = vivosVillanos[0];
-        defensor = vivosHeroes[0];
-      } else {
-        return res.status(400).json({ error: `Atacante inválido en ronda ${rondaNum}` });
-      }
-      if (!atacante || !defensor) break;
-      if (tipoGolpe === 'basico') daño = -5;
-      else if (tipoGolpe === 'especial') daño = -30;
-      else if (tipoGolpe === 'critico') daño = -45;
-      defensor.vida += daño;
-      historial.push({
-        ronda: rondaNum,
-        atacante: atacante.nombre,
-        defensor: defensor.nombre,
-        tipoGolpe,
-        daño,
-        vidasHeroes: vivosHeroes.map(h => ({ nombre: h.nombre, vida: h.vida })),
-        vidasVillanos: vivosVillanos.map(v => ({ nombre: v.nombre, vida: v.vida })),
-        vidaDefensor: defensor.vida,
-        mensaje: `${atacante.nombre} ataca a ${defensor.nombre} con golpe ${tipoGolpe} (${daño} vida, vida restante de ${defensor.nombre}: ${defensor.vida})`
-      });
-      if (defensor.vida <= 0) {
-        if (round.atacante === 'heroe') {
-          vivosVillanos.shift();
-        } else {
-          vivosHeroes.shift();
-        }
-      }
-      rondaNum++;
-    }
-    let resultado;
-    if (vivosHeroes.length > 0 && vivosVillanos.length === 0) { resultado = '¡Ganan los superhéroes!'; peleaFinalizada = true; }
-    else if (vivosVillanos.length > 0 && vivosHeroes.length === 0) { resultado = '¡Ganan los villanos!'; peleaFinalizada = true; }
-    else resultado = 'Pelea inconclusa';
-    // Guardar pelea en historial
-    const fightsAll = await fightRepository.getFights();
-    const newFightId = fightsAll.length > 0 ? Math.max(...fightsAll.map(f => f.fightId)) + 1 : 1;
-    const fight = {
-      fightId: newFightId,
-      equipoHeroes: heroes.map(h => h.nombre),
-      equipoVillanos: villanos.map(v => v.nombre),
-      resultado,
-      historial
-    };
-    fightsAll.push(fight);
-    await fightRepository.saveFights(fightsAll);
-    if (peleaFinalizada) {
-      const personajesRestablecidos = personajes.map(p => {
-        if ((heroes.some(h => h.id === p.id) || villanos.some(v => v.id === p.id))) {
-          return { ...p, vida: 100 };
-        }
-        return p;
-      });
-      await personajeService.updateAllPersonajes(personajesRestablecidos);
-    }
-    res.json({
-      resultado,
-      rondas,
-      heroes: vivosHeroes.map(p => ({
-        id: p.id,
-        nombre: p.nombre,
-        tipo: p.tipo,
-        nivel: p.nivel,
-        experiencia: p.experiencia,
-        escudo: p.escudo,
-        vida: p.vida,
-        ultimateDisponible: p.ultimateDisponible
-      })),
-      villanos: vivosVillanos.map(p => ({
-        id: p.id,
-        nombre: p.nombre,
-        tipo: p.tipo,
-        nivel: p.nivel,
-        experiencia: p.experiencia,
-        escudo: p.escudo,
-        vida: p.vida,
-        ultimateDisponible: p.ultimateDisponible
-      }))
-    });
+router.post('/fights/teams', async (req, res) => {
+  const { equipoHeroes, equipoVillanos } = req.body;
+  if (!equipoHeroes || !equipoVillanos) {
+    return res.status(400).json({ error: 'equipoHeroes y equipoVillanos son obligatorios' });
   }
-);
+  const personajes = await personajeService.getAllPersonajes();
+  const heroes = personajes.filter(p => p.equipo === equipoHeroes && p.tipo === 'superheroe').slice(0, 3);
+  const villanos = personajes.filter(p => p.equipo === equipoVillanos && p.tipo === 'villano').slice(0, 3);
+  if (heroes.length !== 3 || villanos.length !== 3) {
+    return res.status(400).json({ error: 'Ambos equipos deben tener exactamente 3 miembros del tipo correcto' });
+  }
+  // Simulación de la primera ronda
+  let simulados = {};
+  for (let p of [...heroes, ...villanos]) {
+    simulados[p.id] = Object.assign(Object.create(Object.getPrototypeOf(p)), p);
+    simulados[p.id].vida = 100 + (simulados[p.id].nivel - 1) * 5;
+  }
+  let vivosHeroes = heroes.map(p => simulados[p.id]);
+  let vivosVillanos = villanos.map(p => simulados[p.id]);
+  let rondas = [];
+  if (vivosHeroes.length > 0 && vivosVillanos.length > 0) {
+    let heroe = vivosHeroes[0];
+    let villano = vivosVillanos[0];
+    let ronda = { ronda: 1, heroe: heroe.nombre, villano: villano.nombre, historia: [] };
+    let turno = 0;
+    while (heroe.vida > 0 && villano.vida > 0) {
+      let atacante, defensor, desc, esUltimate = false, ataque;
+      if (turno % 2 === 0) {
+        atacante = heroe;
+        defensor = villano;
+      } else {
+        atacante = villano;
+        defensor = heroe;
+      }
+      if (atacante.ultimateDisponible) {
+        ataque = atacante.usarUltimate();
+        desc = `¡Ultimate! (${ataque} daño, ignora escudo)`;
+        esUltimate = true;
+      } else {
+        const prob = Math.random();
+        if (prob < 0.4) {
+          let base = (Math.random() < 0.5) ? atacante.getAtaqueBasico() : atacante.getAtaqueEspecial();
+          ataque = atacante.getAtaqueCritico(base);
+          desc = `Ataque crítico (${ataque} daño)`;
+        } else if (prob < 0.7) {
+          ataque = atacante.getAtaqueEspecial();
+          desc = `Ataque especial (${ataque} daño)`;
+        } else {
+          ataque = atacante.getAtaqueBasico();
+          desc = `Ataque básico (${ataque} daño)`;
+        }
+      }
+      let vidaAntes = defensor.vida;
+      defensor.recibirDanio(ataque, esUltimate);
+      atacante.cargarUltimate(ataque);
+      ronda.historia.push(`${atacante.nombre} ataca a ${defensor.nombre}: ${desc} (vida: ${vidaAntes.toFixed(2)} → ${defensor.vida.toFixed(2)})`);
+      turno++;
+    }
+    if (heroe.vida <= 0) {
+      ronda.resultado = `${villano.nombre} gana la ronda`;
+      vivosHeroes.shift();
+    } else {
+      ronda.resultado = `${heroe.nombre} gana la ronda`;
+      vivosVillanos.shift();
+    }
+    rondas.push(ronda);
+  }
+  let resultado;
+  if (vivosHeroes.length > 0 && vivosVillanos.length === 0) resultado = '¡Ganan los superhéroes!';
+  else if (vivosVillanos.length > 0 && vivosHeroes.length === 0) resultado = '¡Ganan los villanos!';
+  else resultado = 'Pelea inconclusa';
+  // Guardar pelea en MongoDB
+  const fights = await fightRepository.getFights();
+  const fightId = fights.length > 0 ? Math.max(...fights.map(f => f.fightId)) + 1 : 1;
+  await fightRepository.addFight({
+    fightId,
+    equipoHeroes: heroes.map(h => h.nombre),
+    equipoVillanos: villanos.map(v => v.nombre),
+    resultado,
+    rondas
+  });
+  res.json({ fightId, resultado, rondas });
+});
 
 /**
  * @swagger
@@ -433,8 +380,14 @@ router.post('/fights/teams/start',
  *               fightId:
  *                 type: integer
  *                 description: ID de la pelea a continuar
+ *               rondas:
+ *                 type: array
+ *                 description: Rondas adicionales a simular
+ *                 items:
+ *                   type: object
  *             required:
  *               - fightId
+ *               - rondas
  *     responses:
  *       200:
  *         description: Resultado actualizado de la pelea por equipos
@@ -443,54 +396,14 @@ router.post('/fights/teams/start',
  *             schema:
  *               type: object
  *               properties:
+ *                 fightId:
+ *                   type: integer
  *                 resultado:
  *                   type: string
  *                 rondas:
  *                   type: array
  *                   items:
  *                     type: object
- *                 heroes:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: integer
- *                       nombre:
- *                         type: string
- *                       tipo:
- *                         type: string
- *                       nivel:
- *                         type: integer
- *                       experiencia:
- *                         type: integer
- *                       escudo:
- *                         type: integer
- *                       vida:
- *                         type: number
- *                       ultimateDisponible:
- *                         type: boolean
- *                 villanos:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: integer
- *                       nombre:
- *                         type: string
- *                       tipo:
- *                         type: string
- *                       nivel:
- *                         type: integer
- *                       experiencia:
- *                         type: integer
- *                       escudo:
- *                         type: integer
- *                       vida:
- *                         type: number
- *                       ultimateDisponible:
- *                         type: boolean
  *       400:
  *         description: Datos inválidos o enfrentamiento no permitido
  *         content:
@@ -498,187 +411,86 @@ router.post('/fights/teams/start',
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/fights/teams/continue',
-  [
-    body('fightId').isInt({ min: 1 }).withMessage('fightId es obligatorio y debe ser entero positivo'),
-    body('equipoHeroes').isString().notEmpty().withMessage('equipoHeroes es obligatorio'),
-    body('equipoVillanos').isString().notEmpty().withMessage('equipoVillanos es obligatorio'),
-    body('rondas').isArray({ min: 1 }).withMessage('Debes enviar al menos un round'),
-    body('numeroRonda').optional().isInt({ min: 1 }).withMessage('numeroRonda debe ser un entero positivo si se proporciona')
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ error: errors.array() });
-    }
-    const { fightId, equipoHeroes, equipoVillanos, rondas, numeroRonda } = req.body;
-    const personajes = await personajeService.getAllPersonajes();
-    const heroes = personajes.filter(p => p.equipo === equipoHeroes && p.tipo === 'superheroe').slice(0, 3);
-    const villanos = personajes.filter(p => p.equipo === equipoVillanos && p.tipo === 'villano').slice(0, 3);
-    if (heroes.length !== 3 || villanos.length !== 3) {
-      return res.status(400).json({ error: 'Ambos equipos deben tener exactamente 3 miembros del tipo correcto' });
-    }
-    let fights = await fightRepository.getFights();
-    let fight = fights.find(f => f.fightId === fightId);
-    if (!fight) return res.status(400).json({ error: 'fightId no encontrado' });
-    let historial = [...fight.historial];
-    const last = historial.length > 0 ? historial[historial.length - 1] : null;
-    let vivosHeroes = heroes.map(h => {
-      const vida = last?.vidasHeroes?.find(vh => vh.nombre === h.nombre)?.vida ?? 100;
-      return { ...h, vida };
-    });
-    let vivosVillanos = villanos.map(v => {
-      const vida = last?.vidasVillanos?.find(vv => vv.nombre === v.nombre)?.vida ?? 100;
-      return { ...v, vida };
-    });
-    let rondaNum = numeroRonda || (historial.length + 1);
-    let peleaFinalizada = false;
-    for (const round of rondas) {
-      if (vivosHeroes.length === 0 || vivosVillanos.length === 0) { peleaFinalizada = true; break; }
-      let atacante, defensor, tipoGolpe, daño;
-      tipoGolpe = round.tipoGolpe;
-      if (!['basico', 'especial', 'critico'].includes(tipoGolpe)) {
-        return res.status(400).json({ error: `Tipo de golpe inválido en ronda ${rondaNum}` });
-      }
-      if (round.atacante === 'heroe') {
-        atacante = vivosHeroes[0];
-        defensor = vivosVillanos[0];
-      } else if (round.atacante === 'villano') {
-        atacante = vivosVillanos[0];
-        defensor = vivosHeroes[0];
-      } else {
-        return res.status(400).json({ error: `Atacante inválido en ronda ${rondaNum}` });
-      }
-      if (!atacante || !defensor) break;
-      if (tipoGolpe === 'basico') daño = -5;
-      else if (tipoGolpe === 'especial') daño = -30;
-      else if (tipoGolpe === 'critico') daño = -45;
-      defensor.vida += daño;
-      historial.push({
-        ronda: rondaNum,
-        atacante: atacante.nombre,
-        defensor: defensor.nombre,
-        tipoGolpe,
-        daño,
-        vidasHeroes: vivosHeroes.map(h => ({ nombre: h.nombre, vida: h.vida })),
-        vidasVillanos: vivosVillanos.map(v => ({ nombre: v.nombre, vida: v.vida })),
-        vidaDefensor: defensor.vida,
-        mensaje: `${atacante.nombre} ataca a ${defensor.nombre} con golpe ${tipoGolpe} (${daño} vida, vida restante de ${defensor.nombre}: ${defensor.vida})`
-      });
-      if (defensor.vida <= 0) {
-        if (round.atacante === 'heroe') {
-          vivosVillanos.shift();
-        } else {
-          vivosHeroes.shift();
-        }
-      }
-      rondaNum++;
-    }
-    let resultado;
-    if (vivosHeroes.length > 0 && vivosVillanos.length === 0) { resultado = '¡Ganan los superhéroes!'; peleaFinalizada = true; }
-    else if (vivosVillanos.length > 0 && vivosHeroes.length === 0) { resultado = '¡Ganan los villanos!'; peleaFinalizada = true; }
-    else resultado = 'Pelea inconclusa';
-    fight.historial = historial;
-    fight.resultado = resultado;
-    await fightRepository.saveFights(fights);
-    if (peleaFinalizada) {
-      const personajesRestablecidos = personajes.map(p => {
-        if ((heroes.some(h => h.id === p.id) || villanos.some(v => v.id === p.id))) {
-          return { ...p, vida: 100 };
-        }
-        return p;
-      });
-      await personajeService.updateAllPersonajes(personajesRestablecidos);
-    }
-    res.json({
-      resultado,
-      rondas,
-      heroes: vivosHeroes.map(p => ({
-        id: p.id,
-        nombre: p.nombre,
-        tipo: p.tipo,
-        nivel: p.nivel,
-        experiencia: p.experiencia,
-        escudo: p.escudo,
-        vida: p.vida,
-        ultimateDisponible: p.ultimateDisponible
-      })),
-      villanos: vivosVillanos.map(p => ({
-        id: p.id,
-        nombre: p.nombre,
-        tipo: p.tipo,
-        nivel: p.nivel,
-        experiencia: p.experiencia,
-        escudo: p.escudo,
-        vida: p.vida,
-        ultimateDisponible: p.ultimateDisponible
-      }))
-    });
+router.post('/fights/teams/continue', async (req, res) => {
+  const { fightId, rondas } = req.body;
+  if (!fightId || !Array.isArray(rondas) || rondas.length === 0) {
+    return res.status(400).json({ error: 'fightId y rondas son obligatorios' });
   }
-);
-
-/**
- * @swagger
- * /api/fights/solo:
- *   get:
- *     summary: Obtener todas las peleas 1 vs 1 (paginado)
- *     tags: [Peleas]
- *     parameters:
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           default: 1
- *         description: Número de página
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           default: 10
- *         description: Cantidad de peleas por página
- *     responses:
- *       200:
- *         description: Lista paginada de peleas 1 vs 1
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 total:
- *                   type: integer
- *                 totalPages:
- *                   type: integer
- *                 page:
- *                   type: integer
- *                 fights:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       personaje1:
- *                         type: object
- *                       personaje2:
- *                         type: object
- *                       ganador:
- *                         type: string
- *                       historia:
- *                         type: array
- *                         items:
- *                           type: string
- */
-// GET para peleas 1 vs 1 con paginación
-router.get('/fights/solo', async (req, res) => {
-  const page = parseInt(req.query.page, 10) || 1;
-  const limit = parseInt(req.query.limit, 10) || 10;
-  const fights = await fightRepository.getFights();
-  // Filtrar solo peleas 1 vs 1 (que tengan personaje1 y personaje2)
-  const soloFights = fights.filter(f => f.personaje1 && f.personaje2);
-  const total = soloFights.length;
-  const totalPages = Math.ceil(total / limit);
-  const start = (page - 1) * limit;
-  const end = start + limit;
-  const fightsPage = soloFights.slice(start, end);
-  res.json({ total, totalPages, page, fights: fightsPage });
+  const fight = await fightRepository.getFightById(fightId);
+  if (!fight) {
+    return res.status(400).json({ error: 'fightId no encontrado' });
+  }
+  // Recuperar los equipos y estado actual
+  let equipoHeroes = fight.equipoHeroes;
+  let equipoVillanos = fight.equipoVillanos;
+  const personajes = await personajeService.getAllPersonajes();
+  let heroes = personajes.filter(p => equipoHeroes.includes(p.nombre) && p.tipo === 'superheroe').slice(0, 3);
+  let villanos = personajes.filter(p => equipoVillanos.includes(p.nombre) && p.tipo === 'villano').slice(0, 3);
+  // Simular las rondas adicionales
+  let simulados = {};
+  for (let p of [...heroes, ...villanos]) {
+    simulados[p.id] = Object.assign(Object.create(Object.getPrototypeOf(p)), p);
+    simulados[p.id].vida = 100 + (simulados[p.id].nivel - 1) * 5;
+  }
+  let vivosHeroes = heroes.map(p => simulados[p.id]);
+  let vivosVillanos = villanos.map(p => simulados[p.id]);
+  let historial = fight.rondas || [];
+  let rondaNum = historial.length + 1;
+  for (const round of rondas) {
+    if (vivosHeroes.length === 0 || vivosVillanos.length === 0) break;
+    let heroe = vivosHeroes[0];
+    let villano = vivosVillanos[0];
+    let ronda = { ronda: rondaNum, heroe: heroe.nombre, villano: villano.nombre, historia: [] };
+    let turno = 0;
+    while (heroe.vida > 0 && villano.vida > 0) {
+      let atacante, defensor, desc, esUltimate = false, ataque;
+      if (turno % 2 === 0) {
+        atacante = heroe;
+        defensor = villano;
+      } else {
+        atacante = villano;
+        defensor = heroe;
+      }
+      if (atacante.ultimateDisponible) {
+        ataque = atacante.usarUltimate();
+        desc = `¡Ultimate! (${ataque} daño, ignora escudo)`;
+        esUltimate = true;
+      } else {
+        const prob = Math.random();
+        if (prob < 0.4) {
+          let base = (Math.random() < 0.5) ? atacante.getAtaqueBasico() : atacante.getAtaqueEspecial();
+          ataque = atacante.getAtaqueCritico(base);
+          desc = `Ataque crítico (${ataque} daño)`;
+        } else if (prob < 0.7) {
+          ataque = atacante.getAtaqueEspecial();
+          desc = `Ataque especial (${ataque} daño)`;
+        } else {
+          ataque = atacante.getAtaqueBasico();
+          desc = `Ataque básico (${ataque} daño)`;
+        }
+      }
+      let vidaAntes = defensor.vida;
+      defensor.recibirDanio(ataque, esUltimate);
+      atacante.cargarUltimate(ataque);
+      ronda.historia.push(`${atacante.nombre} ataca a ${defensor.nombre}: ${desc} (vida: ${vidaAntes.toFixed(2)} → ${defensor.vida.toFixed(2)})`);
+      turno++;
+    }
+    if (heroe.vida <= 0) {
+      ronda.resultado = `${villano.nombre} gana la ronda`;
+      vivosHeroes.shift();
+    } else {
+      ronda.resultado = `${heroe.nombre} gana la ronda`;
+      vivosVillanos.shift();
+    }
+    historial.push(ronda);
+    rondaNum++;
+  }
+  let resultado;
+  if (vivosHeroes.length > 0 && vivosVillanos.length === 0) resultado = '¡Ganan los superhéroes!';
+  else if (vivosVillanos.length > 0 && vivosHeroes.length === 0) resultado = '¡Ganan los villanos!';
+  else resultado = 'Pelea inconclusa';
+  await fightRepository.updateFight(fightId, { ...fight, resultado, rondas: historial });
+  res.json({ fightId, resultado, rondas: historial });
 });
 
 /**
@@ -739,7 +551,6 @@ router.get('/fights/teams', async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
   const fights = await fightRepository.getFights();
-  // Filtrar solo peleas de equipos (que tengan equipoHeroes y equipoVillanos)
   const teamFights = fights.filter(f => f.equipoHeroes && f.equipoVillanos);
   const total = teamFights.length;
   const totalPages = Math.ceil(total / limit);
@@ -803,20 +614,20 @@ function descripcionAtaque(valor) {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
+// PUT para actualizar el ganador de una pelea
 router.put('/fights/:fightId', async (req, res) => {
   const fightId = parseInt(req.params.fightId, 10);
   const { winner } = req.body;
   if (!winner) {
     return res.status(400).json({ error: 'El nombre del ganador es obligatorio' });
   }
-  const fights = await fightRepository.getFights();
-  const index = fights.findIndex(f => f.fightId === fightId);
-  if (index === -1) {
+  const fight = await fightRepository.getFightById(fightId);
+  if (!fight) {
     return res.status(404).json({ error: 'Pelea no encontrada' });
   }
-  fights[index].winner = winner;
-  await fightRepository.saveFights(fights);
-  res.json({ fight: fights[index] });
+  await fightRepository.updateFight(fightId, { ...fight, winner });
+  const updated = await fightRepository.getFightById(fightId);
+  res.json({ fight: updated });
 });
 
 /**
@@ -849,15 +660,14 @@ router.put('/fights/:fightId', async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
+// DELETE para eliminar una pelea
 router.delete('/fights/:fightId', async (req, res) => {
   const fightId = parseInt(req.params.fightId, 10);
-  const fights = await fightRepository.getFights();
-  const index = fights.findIndex(f => f.fightId === fightId);
-  if (index === -1) {
+  const fight = await fightRepository.getFightById(fightId);
+  if (!fight) {
     return res.status(404).json({ error: 'Pelea no encontrada' });
   }
-  fights.splice(index, 1);
-  await fightRepository.saveFights(fights);
+  await fightRepository.deleteFight(fightId);
   res.json({ message: 'Pelea eliminada exitosamente' });
 });
 
