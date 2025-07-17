@@ -67,4 +67,25 @@ router.post(
   }
 );
 
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Obtener todos los usuarios
+ *     tags: [Usuarios]
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ */
+router.get('/users', async (req, res) => {
+  const users = await userRepository.getUsers();
+  res.json(users);
+});
+
 export default router; 

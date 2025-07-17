@@ -1331,5 +1331,95 @@
         "mensaje": "Superman ataca a Joker con golpe especial (-30 vida, vida restante de Joker: -25)"
       }
     ]
+  },
+  {
+    "fightId": 39,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "basico",
+        "daño": -5,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 95
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 95,
+        "mensaje": "Superman ataca a Joker con golpe basico (-5 vida, vida restante de Joker: 95)"
+      },
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "basico",
+        "daño": -5,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 90
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 90,
+        "mensaje": "Superman ataca a Joker con golpe basico (-5 vida, vida restante de Joker: 90)"
+      }
+    ]
   }
 ]
