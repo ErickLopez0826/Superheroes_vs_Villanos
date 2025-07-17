@@ -1,0 +1,1425 @@
+[
+  {
+    "fightId": 1,
+    "hero": {
+      "id": 1,
+      "name": "Spider-Man",
+      "alias": "Peter Parker"
+    },
+    "villain": {
+      "id": 2,
+      "name": "Thanos",
+      "alias": "El Titán Loco"
+    },
+    "winner": "Thanos"
+  },
+  {
+    "fightId": 2,
+    "hero": {
+      "id": 1,
+      "name": "Spider-Man",
+      "alias": "Peter Parker"
+    },
+    "villain": {
+      "id": 2,
+      "name": "Thanos",
+      "alias": "El Titán Loco"
+    },
+    "winner": "Thanos"
+  },
+  {
+    "fightId": 3,
+    "hero": {
+      "id": 1,
+      "name": "Spider-Man",
+      "alias": "Peter Parker"
+    },
+    "villain": {
+      "id": 2,
+      "name": "Thanos",
+      "alias": "El Titán Loco"
+    },
+    "winner": "Thanos"
+  },
+  {
+    "fightId": 4,
+    "hero": {
+      "id": 1,
+      "name": "Spider-Man",
+      "alias": "Peter Parker"
+    },
+    "villain": {
+      "id": 2,
+      "name": "Thanos",
+      "alias": "El Titán Loco"
+    },
+    "winner": "Spider-Man"
+  },
+  {
+    "fightId": 5,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "basico",
+        "daño": -5,
+        "vidaHeroe": 100,
+        "vidaVillano": 95,
+        "mensaje": "Superman ataca a Joker con golpe basico (-5 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 6,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 7,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "critico",
+        "daño": -45,
+        "vidaHeroe": 100,
+        "vidaVillano": 55,
+        "mensaje": "Superman ataca a Joker con golpe critico (-45 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 8,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "critico",
+        "daño": -45,
+        "vidaHeroe": 100,
+        "vidaVillano": 55,
+        "mensaje": "Superman ataca a Joker con golpe critico (-45 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 9,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "critico",
+        "daño": -45,
+        "vidaHeroe": 100,
+        "vidaVillano": 55,
+        "mensaje": "Superman ataca a Joker con golpe critico (-45 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 10,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 11,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "basico",
+        "daño": -5,
+        "vidaHeroe": 100,
+        "vidaVillano": 95,
+        "mensaje": "Superman ataca a Joker con golpe basico (-5 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 12,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 13,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 14,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 15,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 16,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 17,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 18,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 19,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 20,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 21,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 22,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 23,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 24,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 25,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidaHeroe": 100,
+        "vidaVillano": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida)"
+      }
+    ]
+  },
+  {
+    "fightId": 26,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "basico",
+        "daño": -5,
+        "vidaHeroe": 100,
+        "vidaVillano": 95,
+        "vidaDefensor": 95,
+        "mensaje": "Superman ataca a Joker con golpe basico (-5 vida, vida restante de Joker: 95)"
+      }
+    ]
+  },
+  {
+    "fightId": 27,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "critico",
+        "daño": -45,
+        "vidaHeroe": 100,
+        "vidaVillano": 55,
+        "vidaDefensor": 55,
+        "mensaje": "Superman ataca a Joker con golpe critico (-45 vida, vida restante de Joker: 55)"
+      }
+    ]
+  },
+  {
+    "fightId": 28,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "critico",
+        "daño": -45,
+        "vidaHeroe": 100,
+        "vidaVillano": 55,
+        "vidaDefensor": 55,
+        "mensaje": "Superman ataca a Joker con golpe critico (-45 vida, vida restante de Joker: 55)"
+      }
+    ]
+  },
+  {
+    "fightId": 29,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "critico",
+        "daño": -45,
+        "vidaHeroe": 100,
+        "vidaVillano": 55,
+        "vidaDefensor": 55,
+        "mensaje": "Superman ataca a Joker con golpe critico (-45 vida, vida restante de Joker: 55)"
+      }
+    ]
+  },
+  {
+    "fightId": 30,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "basico",
+        "daño": -5,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 95
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 95,
+        "mensaje": "Superman ataca a Joker con golpe basico (-5 vida, vida restante de Joker: 95)"
+      }
+    ]
+  },
+  {
+    "fightId": 31,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 70
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida, vida restante de Joker: 70)"
+      }
+    ]
+  },
+  {
+    "fightId": 32,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 70
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida, vida restante de Joker: 70)"
+      }
+    ]
+  },
+  {
+    "fightId": 33,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 70
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 70,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida, vida restante de Joker: 70)"
+      }
+    ]
+  },
+  {
+    "fightId": 34,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "basico",
+        "daño": -5,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 95
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 95,
+        "mensaje": "Superman ataca a Joker con golpe basico (-5 vida, vida restante de Joker: 95)"
+      }
+    ]
+  },
+  {
+    "fightId": 35,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "basico",
+        "daño": -5,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 95
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 95,
+        "mensaje": "Superman ataca a Joker con golpe basico (-5 vida, vida restante de Joker: 95)"
+      }
+    ]
+  },
+  {
+    "fightId": 36,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "basico",
+        "daño": -5,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 95
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 95,
+        "mensaje": "Superman ataca a Joker con golpe basico (-5 vida, vida restante de Joker: 95)"
+      },
+      {
+        "ronda": 2,
+        "atacante": "Joker",
+        "defensor": "Superman",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 70
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 95
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 70,
+        "mensaje": "Joker ataca a Superman con golpe especial (-30 vida, vida restante de Superman: 70)"
+      }
+    ]
+  },
+  {
+    "fightId": 37,
+    "personaje1": {
+      "id": 1,
+      "nombre": "Superman",
+      "tipo": "superheroe"
+    },
+    "personaje2": {
+      "id": 30,
+      "nombre": "Venom",
+      "tipo": "villano"
+    },
+    "winner": "Superman"
+  },
+  {
+    "fightId": 38,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "basico",
+        "daño": -5,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 95
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 95,
+        "mensaje": "Superman ataca a Joker con golpe basico (-5 vida, vida restante de Joker: 95)"
+      },
+      {
+        "ronda": 2,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 65
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 65,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida, vida restante de Joker: 65)"
+      },
+      {
+        "ronda": 2,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 35
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 35,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida, vida restante de Joker: 35)"
+      },
+      {
+        "ronda": 2,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 5
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 5,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida, vida restante de Joker: 5)"
+      },
+      {
+        "ronda": 2,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "especial",
+        "daño": -30,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": -25
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": -25,
+        "mensaje": "Superman ataca a Joker con golpe especial (-30 vida, vida restante de Joker: -25)"
+      }
+    ]
+  },
+  {
+    "fightId": 39,
+    "equipoHeroes": [
+      "Superman",
+      "Batman",
+      "Wonder Woman"
+    ],
+    "equipoVillanos": [
+      "Joker",
+      "Thanos",
+      "Green Goblin"
+    ],
+    "resultado": "Pelea inconclusa",
+    "historial": [
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "basico",
+        "daño": -5,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 95
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 95,
+        "mensaje": "Superman ataca a Joker con golpe basico (-5 vida, vida restante de Joker: 95)"
+      },
+      {
+        "ronda": 1,
+        "atacante": "Superman",
+        "defensor": "Joker",
+        "tipoGolpe": "basico",
+        "daño": -5,
+        "vidasHeroes": [
+          {
+            "nombre": "Superman",
+            "vida": 100
+          },
+          {
+            "nombre": "Batman",
+            "vida": 100
+          },
+          {
+            "nombre": "Wonder Woman",
+            "vida": 100
+          }
+        ],
+        "vidasVillanos": [
+          {
+            "nombre": "Joker",
+            "vida": 90
+          },
+          {
+            "nombre": "Thanos",
+            "vida": 100
+          },
+          {
+            "nombre": "Green Goblin",
+            "vida": 100
+          }
+        ],
+        "vidaDefensor": 90,
+        "mensaje": "Superman ataca a Joker con golpe basico (-5 vida, vida restante de Joker: 90)"
+      }
+    ]
+  }
+]
